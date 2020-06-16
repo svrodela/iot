@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://s3.amazonaws.com/stitch-sdks/js/bundles/4.6.0/stitch.js"></script>
+    <script>
+
+    const client = stitch.Stitch.initializeDefaultAppClient('iot-siptk');
+
+    const db = client.getServiceClient(stitch.RemoteMongoClient.factory, 'mongodb-atlas').db('temperaturas');
+
+    client.auth.loginWithCredential(new stitch.AnonymousCredential()).then(user =>
+        db.collection('valores').insertOne({owner_id: client.auth.user.id}, {$set:{tem:23}}, {upsert:true})
+    ).then(() =>
+        db.collection('valores').find().asArray()
+    ).then(docs => {
+        console.log("Found docs", docs)
+        console.log("[MongoDB Stitch] Connected to Stitch")
+    }).catch(err => {
+        console.error(err)
+    });
+    </script>
+    <title>Insert stitch</title>
+</head>
+<body>
+    <h1>Valores Wemos</h1>
+    <div class="content">temperatura, humedad y luz</div>
+    <div class="valores"></div>
+</body>
+</html>
